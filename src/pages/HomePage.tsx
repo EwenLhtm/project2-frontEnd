@@ -1,4 +1,4 @@
-// import Button from "../components/common/button";
+import Button from "../components/common/Button";
 import { useNavigate } from "react-router-dom";
 
 
@@ -9,8 +9,8 @@ export default function HomePage() {
         <div className="bg-[#FDFDFC] dark:bg-[#0a0a0a] text-[#1b1b18] flex p-6 lg:p-8 items-center lg:justify-center min-h-screen flex-col">
             <header className="w-full lg:max-w-4xl max-w-[335px] text-sm mb-6 not-has-[nav]:hidden">
                     <nav className="flex items-center justify-end gap-4">
-                        {/* <Button onClick={() => {navigate("/login")}}>Login</Button>
-                        <Button onClick={() => {navigate("/register")}}>Sign Up</Button> */}
+                        <Button onClick={() => {navigate("/login")}}>Login</Button>
+                        <Button onClick={() => {navigate("/register")}}>Sign Up</Button>
                     </nav>
             </header>
             <div className="flex items-center justify-center w-full transition-opacity opacity-100 duration-750 lg:grow starting:opacity-0">
