@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { type RegisterResponse, type User } from "../features/auth/auth.types";
 
 import AuthLayout from "../components/auth/AuthLayout";
 import AuthHeader from "../components/auth/AuthHeader";
@@ -7,14 +9,42 @@ import AuthPassword from "../components/auth/AuthPassword";
 import AuthButton from "../components/auth/AuthButton";
 import AuthFooter from "../components/auth/AuthFooter";
 
+import { register } from "../features/auth/authService";
+
 export default function RegisterPage() {
+    const navigate = useNavigate();
+    
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
+    const [error, setError] = useState("");
+    const [success, setSuccess] = useState("");
+    const [loading, setLoading] = useState(false);
 
-    function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault();
+
+        setError("");
+        setSuccess("");
+        setLoading(true);
+
+        try {
+            const userData: RegisterResponse = await register({
+                name,
+                email,
+                password,
+                password_confirmation: confirmPassword
+            });
+
+            const user: User = userData.user;
+            setSuccess(`Compte crée pour ${user.name} !`);
+            navigate('/dashboard');
+        } catch (error: any) {
+            setError(error.message || "Failed to register user");
+        } finally {
+            setLoading(false);
+        }
     }
 
     return (
@@ -81,8 +111,11 @@ export default function RegisterPage() {
                     />     
                 </div>
 
+                {error && (<p className="mt-5 text-sm text-red-500">{error}</p>)}
+                {success && (<p className="mt-5 text-sm text-green-500">{success}</p>)}
+
                 <div className="mt-5">
-                    <AuthButton>Create Account</AuthButton>
+                    <AuthButton>{loading ? "Création en cours..." : "Create Account"}</AuthButton>
                 </div>
             </form>
 
