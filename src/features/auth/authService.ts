@@ -1,4 +1,4 @@
-import { type RegisterData, type RegisterResponse, type User } from './auth.types';
+import type { RegisterData, RegisterResponse, LoginData, LoginResponse } from './auth.types';
 
 const API_URL = import.meta.env.VITE_API_URL as string;
 
@@ -11,8 +11,7 @@ export async function register(
             'content-type': 'application/json',
             'accept': 'application/json'
         },
-        body: JSON.stringify(data),
-        redirect: 'manual'
+        body: JSON.stringify(data)
     });
 
     if (!response.ok) {
@@ -23,4 +22,26 @@ export async function register(
 
     const userData = await response.json() as RegisterResponse;
     return userData;
+}
+
+export async function login(
+    data: LoginData
+): Promise<LoginResponse> {
+    const response = await fetch(`${API_URL}/login`, {
+        method: 'POST',
+        headers: {
+            'content-type': 'application/json',
+            'accept': 'application/json'
+        },
+        body: JSON.stringify(data)
+    });
+
+    if (!response.ok) {
+        const errorData = await response.json().catch(() => null);
+
+        throw new Error(errorData?.message || 'Failed to log in user');
+    }
+
+    const loginData = await response.json() as LoginResponse;
+    return loginData;
 }

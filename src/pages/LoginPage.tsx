@@ -1,4 +1,8 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+
+import { login } from "../features/auth/authService";
+import { type LoginResponse } from "../features/auth/auth.types";
 
 import AuthLayout from "../components/auth/AuthLayout";
 import AuthHeader from "../components/auth/AuthHeader";
@@ -9,12 +13,38 @@ import AuthFooter from "../components/auth/AuthFooter";
 import Checkbox from "../components/common/Checkbox";
 
 export default function LoginPage() {
+  const navigate = useNavigate();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
+
+    setError("");
+    setSuccess("");
+    setLoading(true);
+
+    try {
+      const userData: LoginResponse = await login({
+        email,
+        password
+      });
+
+      const token = userData.token;
+      localStorage.setItem("token", token);
+
+      setSuccess("Logged in successfully!");
+      navigate("/dashboard");
+    } catch (error: any) {
+      setError(error.message || "Failed to log in user");
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -70,8 +100,11 @@ export default function LoginPage() {
           />
         </div>
 
+        {error && (<p className="mt-5 text-sm text-red-500">{error}</p>)}
+        {success && (<p className="mt-5 text-sm text-green-500">{success}</p>)}
+
         <div className="mt-5">
-          <AuthButton>Log in</AuthButton>
+          <AuthButton>{loading ? "Connexion en cours..." : "Log in"}</AuthButton>
         </div>
       </form>
 

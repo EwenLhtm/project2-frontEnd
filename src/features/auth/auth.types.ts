@@ -10,6 +10,16 @@ export type RegisterResponse = {
     user: User;
 };
 
+export type LoginData = {
+    email: string;
+    password: string;
+};
+
+export type LoginResponse = {
+    message: string;
+    token: string;
+}
+
 export type User = {
     created_at: string;
     email: string;
