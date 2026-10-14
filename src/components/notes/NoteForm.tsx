@@ -1,24 +1,44 @@
 
 import { useState, type FormEvent } from "react";
-import type { Tag } from "../../pages/DashboardPage";
+import type { Tag } from "../../features/tags/tag.type";
+import { getCurrentUser } from "../../features/auth/authService";
+import { createNote } from "../../features/notes/noteService";
+import { useAppDispatch } from "../../hooks/redux";
+import { fetchNotes } from "../../features/notes/noteSlice";
 
 type NoteFormProps = {
   tags: Tag[];
-  onAddNote: (content: string, tagId: string | null) => void;
 };
 
-export default function NoteForm({ tags, onAddNote }: NoteFormProps) {
+export default function NoteForm({ tags }: NoteFormProps) {
+  const dispatch = useAppDispatch();
+
   const [content, setContent] = useState("");
   const [tagId, setTagId] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    if (!content.trim()) return;
+    const trimmedContent = content.trim();
+    if (!trimmedContent || !tagId) return;
 
-    onAddNote(content.trim(), tagId || null);
-    setContent("");
-    setTagId("");
+    setError("");
+    setLoading(true);
+
+    try {
+      const user = await getCurrentUser();
+      await createNote({ text: trimmedContent, tag_id: parseInt(tagId), user_id: user.id });
+      await dispatch(fetchNotes()).unwrap();
+
+      setContent("");
+      setTagId("");
+    } catch (error: any) {
+      setError(error.message || "Failed to create note");
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -45,11 +65,14 @@ export default function NoteForm({ tags, onAddNote }: NoteFormProps) {
         ))}
       </select>
 
+      {error && <p className="text-xs text-red-500">{error}</p>}
+
       <button
         type="submit"
         className="bg-blue-500 px-4 py-2 text-sm transition hover:bg-blue-600"
       >
-        Add Note
+        
+        {loading ? "Creating..." : "Create Note"}
       </button>
     </form>
   );

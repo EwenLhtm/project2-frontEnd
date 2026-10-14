@@ -1,21 +1,23 @@
 
-import type { Note, Tag } from "../../pages/DashboardPage";
+import type { Note } from "../../features/notes/note.type";
+import type { Tag } from "../../features/tags/tag.type";
 
 type NoteCardProps = {
   note: Note;
   tag: Tag | null;
-  onDelete: (id: string) => void;
 };
 
 export default function NoteCard({
   note,
-  tag,
-  onDelete,
+  tag
 }: NoteCardProps) {
+
+  async function handleDelete() {}
+  
   return (
     <article className="rounded-lg border border-[#383838] bg-[#202020] p-4">
       <p className="whitespace-pre-wrap break-words text-sm leading-6 text-gray-200">
-        {note.content}
+        {note.text}
       </p>
 
       <div className="mt-4 flex items-center justify-between gap-3 border-t border-[#383838] pt-3">
@@ -29,7 +31,7 @@ export default function NoteCard({
 
         <button
           type="button"
-          onClick={() => onDelete(note.id)}
+          onClick={() => handleDelete()}
           className="text-xs text-gray-400 transition hover:text-red-400"
         >
           Delete

@@ -1,5 +1,6 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { fetchTags } from "../features/tags/tagSlice";
+import { fetchNotes } from "../features/notes/noteSlice";
 import { useAppDispatch, useAppSelector } from "../hooks/redux";
 
 import Sidebar from "../components/dashboard/DbSideBar";
@@ -11,19 +12,17 @@ import TagForm from "../components/tags/TagForm";
 export default function Dashboard() {
   const dispatch = useAppDispatch();
 
-  const { tags, loading, error } = useAppSelector((state) => state.tags);
-  const [notes, setNotes] = useState([]); // Placeholder for notes state
+  const { tags, loading: loadingTags, error: errorTags } = useAppSelector((state) => state.tags);
+  const { notes, loading: loadingNotes, error: errorNotes } = useAppSelector((state) => state.notes);
 
   useEffect(() => {
     dispatch(fetchTags());
+    dispatch(fetchNotes());
   }, [dispatch]);
 
-  if (loading) {return <p>Loading tags...</p>;}
-  if (error) {return <p>Error: {error}</p>;}
-
-  function addNote(): void {}
-
-  function deleteNote(): void {}
+  if (loadingTags || loadingNotes) {return <p>Loading...</p>;}
+  if (errorTags) {return <p>Error: {errorTags}</p>;}
+  if (errorNotes) {return <p>Error: {errorNotes}</p>;}
 
   function deleteTag(): void {}
 
@@ -35,7 +34,7 @@ export default function Dashboard() {
         <div className="mx-auto max-w-[1400px] space-y-8">
           {/* Section Notes */}
           <section className="rounded-xl border border-[#383838] bg-[#171717] p-4 sm:p-5">
-            <NoteForm tags={tags} onAddNote={addNote} />
+            <NoteForm tags={tags} />
 
             <div className="my-4 border-t border-[#444]" />
 
@@ -51,8 +50,7 @@ export default function Dashboard() {
                   <NoteCard
                     key={note.id}
                     note={note}
-                    tag={tags.find((tag) => tag.id === note.tagId) ?? null}
-                    onDelete={deleteNote}
+                    tag={tags.find((tag) => tag.id === note.id) ?? null}
                   />
                 ))}
               </div>
@@ -80,7 +78,7 @@ export default function Dashboard() {
                       <span>{tag.name}</span>
                       <button
                         type="button"
-                        onClick={() => deleteTag(tag.id)}
+                        onClick={() => deleteTag()}
                         aria-label={`Delete tag ${tag.name}`}
                         className="text-gray-400 hover:text-red-400"
                       >

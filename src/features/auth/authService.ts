@@ -1,4 +1,4 @@
-import type { RegisterData, RegisterResponse, LoginData, LoginResponse } from './auth.types';
+import type { RegisterData, RegisterResponse, LoginData, LoginResponse, User } from './auth.types';
 
 const API_URL = import.meta.env.VITE_API_URL as string;
 
@@ -44,4 +44,24 @@ export async function login(
 
     const loginData = await response.json() as LoginResponse;
     return loginData;
+}
+
+export async function getCurrentUser(): Promise<User> {
+    const response = await fetch(`${API_URL}/user`, {
+        method: 'GET',
+        headers: {
+            'content-type': 'application/json',
+            'accept': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem("token")}`
+        }
+    });
+
+    if (!response.ok) {
+        const errorData = await response.json().catch(() => null);
+
+        throw new Error(errorData?.message || 'Failed to get current user');
+    }
+
+    const user = await response.json() as User;
+    return user;
 }
