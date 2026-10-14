@@ -1,21 +1,34 @@
-
 import { useState, type FormEvent } from "react";
+import { createTag } from "../../features/tags/tagService";
+import { useAppDispatch } from "../../hooks/redux";
+import { fetchTags } from "../../features/tags/tagSlice";
 
-type TagFormProps = {
-  onAddTag: (name: string) => void;
-};
+export default function TagForm() {
+  const dispatch = useAppDispatch();
 
-export default function TagForm({ onAddTag }: TagFormProps) {
   const [name, setName] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
     const trimmedName = name.trim();
     if (!trimmedName) return;
 
-    onAddTag(trimmedName);
-    setName("");
+    setError("");
+    setLoading(true);
+
+    try {
+      await createTag({ name: trimmedName });
+      await dispatch(fetchTags()).unwrap();
+
+      setName("");
+    } catch (error: any) {
+      setError(error.message || "Failed to create tag");
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -29,11 +42,13 @@ export default function TagForm({ onAddTag }: TagFormProps) {
         className="h-7 w-full rounded-sm border border-[#d0d0d0] bg-transparent px-3 text-xs outline-none placeholder:text-gray-400 focus:border-blue-500"
       />
 
+      {error && <p className="text-xs text-red-500">{error}</p>}
+
       <button
         type="submit"
         className="bg-blue-500 px-4 py-2 text-sm transition hover:bg-blue-600"
       >
-        Add Tag
+        {loading ? "Creating..." : "Create Tag"}
       </button>
     </form>
   );

@@ -1,57 +1,31 @@
+import { useState, useEffect } from "react";
+import { fetchTags } from "../features/tags/tagSlice";
+import { useAppDispatch, useAppSelector } from "../hooks/redux";
 
-import { useState } from "react";
 import Sidebar from "../components/dashboard/DbSideBar";
 import NoteForm from "../components/notes/NoteForm";
 import NoteCard from "../components/notes/NoteCard";
 import TagForm from "../components/tags/TagForm";
 
-export type Tag = {
-  id: string;
-  name: string;
-};
-
-export type Note = {
-  id: string;
-  content: string;
-  tagId: string | null;
-};
 
 export default function Dashboard() {
-  const [tags, setTags] = useState<Tag[]>([]);
-  const [notes, setNotes] = useState<Note[]>([]);
+  const dispatch = useAppDispatch();
 
-  function addTag(name: string) {
-    const newTag: Tag = {
-      id: crypto.randomUUID(),
-      name,
-    };
+  const { tags, loading, error } = useAppSelector((state) => state.tags);
+  const [notes, setNotes] = useState([]); // Placeholder for notes state
 
-    setTags((current) => [...current, newTag]);
-  }
+  useEffect(() => {
+    dispatch(fetchTags());
+  }, [dispatch]);
 
-  function addNote(content: string, tagId: string | null) {
-    const newNote: Note = {
-      id: crypto.randomUUID(),
-      content,
-      tagId,
-    };
+  if (loading) {return <p>Loading tags...</p>;}
+  if (error) {return <p>Error: {error}</p>;}
 
-    setNotes((current) => [...current, newNote]);
-  }
+  function addNote(): void {}
 
-  function deleteNote(id: string) {
-    setNotes((current) => current.filter((note) => note.id !== id));
-  }
+  function deleteNote(): void {}
 
-  function deleteTag(id: string) {
-    setTags((current) => current.filter((tag) => tag.id !== id));
-
-    setNotes((current) =>
-      current.map((note) =>
-        note.tagId === id ? { ...note, tagId: null } : note
-      )
-    );
-  }
+  function deleteTag(): void {}
 
   return (
     <div className="min-h-screen bg-[#262626] text-white">
@@ -89,7 +63,7 @@ export default function Dashboard() {
           <section className="rounded-xl border border-[#383838] bg-[#171717] p-4 sm:p-5">
             <h2 className="mb-4 text-lg font-semibold">Manage Tags</h2>
 
-            <TagForm onAddTag={addTag} />
+            <TagForm />
 
             {tags.length > 0 && (
               <div className="mt-5 border-t border-[#383838] pt-4">
