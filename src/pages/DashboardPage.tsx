@@ -4,6 +4,8 @@ import { fetchNotes } from "../features/notes/noteSlice";
 import { fetchCurrentUser } from "../features/auth/authSlice";
 import { useAppDispatch, useAppSelector } from "../hooks/redux";
 
+import Loading from "../components/common/Loading";
+import ErrorLogin from "../components/common/ErrorLogin";
 import Sidebar from "../components/dashboard/DbSideBar";
 import NoteForm from "../components/notes/NoteForm";
 import NoteCard from "../components/notes/NoteCard";
@@ -13,8 +15,8 @@ import TagForm from "../components/tags/TagForm";
 export default function Dashboard() {
   const dispatch = useAppDispatch();
 
-  const { tags, loading: loadingTags, error: errorTags } = useAppSelector((state) => state.tags);
-  const { notes, loading: loadingNotes, error: errorNotes } = useAppSelector((state) => state.notes);
+  const { tags, error: errorTags } = useAppSelector((state) => state.tags);
+  const { notes, error: errorNotes } = useAppSelector((state) => state.notes);
   const { user, loading: loadingUser, error: errorUser } = useAppSelector((state) => state.auth);
 
   useEffect(() => {
@@ -23,10 +25,8 @@ export default function Dashboard() {
     dispatch(fetchCurrentUser());
   }, [dispatch]);
 
-  if (loadingTags || loadingNotes || loadingUser) {return <p>Loading...</p>;}
-  if (errorTags) {return <p>Error: {errorTags}</p>;}
-  if (errorNotes) {return <p>Error: {errorNotes}</p>;}
-  if (errorUser || !user) {return <p>Error: {errorUser}</p>;}
+  if (loadingUser) {return <Loading />;}
+  if (errorUser || errorTags || errorNotes) {return <ErrorLogin />;}
 
   return (
     <div className="min-h-screen bg-[#262626] text-white">

@@ -2,6 +2,7 @@ import { NavLink, Outlet } from "react-router-dom";
 import { UserRound, LockKeyhole, Palette } from "lucide-react";
 import DbSidebar from "../../components/dashboard/DbSideBar";
 import { useSelector } from "react-redux";
+import ErrorLogin from "../../components/common/ErrorLogin";
 
 const tabs = [
   { label: "Profile", path: "profile", icon: UserRound },
@@ -11,6 +12,12 @@ const tabs = [
 
 export default function SettingsLayout() {
   const { user } = useSelector((state: any) => state.auth);
+
+  if (user == null) {
+    return (
+      <ErrorLogin />
+    );
+  }
 
   return (
     <div className="min-h-screen w-full bg-[#242424] text-white">
