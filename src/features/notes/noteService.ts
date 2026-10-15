@@ -46,3 +46,20 @@ export async function getAllNotes(): Promise<Note[]> {
     console.log(notesData);
     return notes;
 }
+
+export async function deleteNote(noteId: number): Promise<void> {
+    const response = await fetch(`${API_URL}/notes/${noteId}`, {
+        method: 'DELETE',
+        headers: {
+            'content-type': 'application/json',
+            'accept': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem("token")}`
+        }
+    });
+
+    if (!response.ok) {
+        const errorData = await response.json().catch(() => null);
+
+        throw new Error(errorData?.message || 'Failed to delete note');
+    }
+}

@@ -24,8 +24,6 @@ export default function Dashboard() {
   if (errorTags) {return <p>Error: {errorTags}</p>;}
   if (errorNotes) {return <p>Error: {errorNotes}</p>;}
 
-  function deleteTag(): void {}
-
   return (
     <div className="min-h-screen bg-[#262626] text-white">
       <Sidebar username="test2" />
@@ -76,14 +74,6 @@ export default function Dashboard() {
                       className="flex items-center gap-2 rounded-full border border-[#444] bg-[#262626] px-3 py-1.5 text-sm"
                     >
                       <span>{tag.name}</span>
-                      <button
-                        type="button"
-                        onClick={() => deleteTag()}
-                        aria-label={`Delete tag ${tag.name}`}
-                        className="text-gray-400 hover:text-red-400"
-                      >
-                        ×
-                      </button>
                     </div>
                   ))}
                 </div>

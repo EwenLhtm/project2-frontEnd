@@ -1,6 +1,9 @@
 
 import type { Note } from "../../features/notes/note.type";
 import type { Tag } from "../../features/tags/tag.type";
+import { deleteNote } from "../../features/notes/noteService";
+import { useAppDispatch } from "../../hooks/redux";
+import { fetchNotes } from "../../features/notes/noteSlice";
 
 type NoteCardProps = {
   note: Note;
@@ -11,9 +14,17 @@ export default function NoteCard({
   note,
   tag
 }: NoteCardProps) {
+  const dispatch = useAppDispatch();
 
-  async function handleDelete() {}
-  
+  async function handleDelete() {
+    try {
+      await deleteNote(note.id);
+      await dispatch(fetchNotes()).unwrap();
+
+    } catch (error: any) {
+      console.error("Error deleting note:", error.message);
+    }
+  }
   return (
     <article className="rounded-lg border border-[#383838] bg-[#202020] p-4">
       <p className="whitespace-pre-wrap break-words text-sm leading-6 text-gray-200">

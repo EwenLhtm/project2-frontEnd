@@ -39,7 +39,7 @@ export default function RegisterPage() {
 
             const user: User = userData.user;
             setSuccess(`Compte crée pour ${user.name} !`);
-            navigate('/dashboard');
+            navigate('/login');
         } catch (error: any) {
             setError(error.message || "Failed to register user");
         } finally {
