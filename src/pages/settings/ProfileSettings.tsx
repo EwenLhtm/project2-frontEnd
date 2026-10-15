@@ -1,4 +1,40 @@
+import { useState } from "react";
+import { updateProfile } from "../../features/auth/authService";
+import { fetchCurrentUser } from "../../features/auth/authSlice";
+import { useAppDispatch, useAppSelector } from "../../hooks/redux";
+
 export default function ProfileSettings() {
+  const dispatch = useAppDispatch();
+  const { user } = useAppSelector((state) => state.auth);
+
+  const [name, setName] = useState(user?.name || "");
+  const [email, setEmail] = useState(user?.email || "");
+  const [success, setSuccess] = useState(false);
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+    const trimmedName = name.trim();
+    const trimmedEmail = email.trim();
+    if (!trimmedName || !trimmedEmail) return;
+
+    setError("");
+    setLoading(true);
+
+    try {
+      await updateProfile({ name: trimmedName, email: trimmedEmail });
+      await dispatch(fetchCurrentUser()).unwrap();
+
+      setSuccess(true);
+    }catch (error: any) {
+      setError(error.message || "Failed to update profile");
+    } finally {
+      setLoading(false);
+    }
+  }
+
   return (
     <div>
       <h2 className="text-sm font-semibold">Profile</h2>
@@ -7,7 +43,7 @@ export default function ProfileSettings() {
       </p>
 
       <form
-        onSubmit={(event) => event.preventDefault()}
+        onSubmit={(event) => handleSubmit(event)}
         className="mt-6 space-y-5"
       >
         <div>
@@ -18,7 +54,8 @@ export default function ProfileSettings() {
             id="name"
             name="name"
             type="text"
-            defaultValue="test2"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
             className="w-full rounded-md border border-[#505050] bg-[#383838] px-3 py-2 text-sm outline-none transition focus:border-gray-400"
           />
         </div>
@@ -31,7 +68,8 @@ export default function ProfileSettings() {
             id="email"
             name="email"
             type="email"
-            defaultValue="test2@gmail.com"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
             className="w-full rounded-md border border-[#505050] bg-[#383838] px-3 py-2 text-sm outline-none transition focus:border-gray-400"
           />
         </div>
@@ -40,9 +78,20 @@ export default function ProfileSettings() {
           type="submit"
           className="rounded-lg bg-white px-4 py-2.5 text-sm font-medium text-black transition hover:bg-gray-200"
         >
-          Save
+          {loading ? "Saving..." : "Save"}
         </button>
       </form>
+
+      {success && (
+        <p className="mt-3 text-sm text-green-500">
+          Profile updated successfully!
+        </p>
+      )}
+      {error && (
+        <p className="mt-3 text-sm text-red-500">
+          {error}
+        </p>
+      )}
 
       <div className="mt-9 border-t border-[#3b3b3b] pt-6">
         <h3 className="text-sm font-medium">Delete account</h3>

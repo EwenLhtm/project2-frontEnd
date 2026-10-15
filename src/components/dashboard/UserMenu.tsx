@@ -1,9 +1,11 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Settings,
   LogOut,
   ChevronsUpDown,
 } from "lucide-react";
+import { logout } from "../../features/auth/authService";
 
 type UserMenuProps = {
   name: string;
@@ -11,9 +13,31 @@ type UserMenuProps = {
 };
 
 export default function UserMenu({ name, email }: UserMenuProps) {
+  const navigate = useNavigate();
+
   const [isOpen, setIsOpen] = useState(false);
 
   const initial = name.charAt(0).toLowerCase();
+
+  function handleSettingsClick() {
+    setIsOpen(false);
+    // Redirect to settings page
+    navigate("/settings/profile");
+  }
+
+  async function handleLogoutClick() {
+    setIsOpen(false);
+
+    // Clear token from the backend API service (if applicable)
+    await logout();
+
+    // Clear user data from localStorage
+    localStorage.removeItem("token");
+
+
+    // Redirect to login page
+    navigate("/login");
+  }
 
   return (
     <div className="relative w-full">
@@ -39,7 +63,7 @@ export default function UserMenu({ name, email }: UserMenuProps) {
           {/* Settings */}
           <button
             type="button"
-            onClick={() => setIsOpen(false)}
+            onClick={() => handleSettingsClick()}
             className="flex w-full items-center gap-3 border-b border-[#555] px-3 py-3 text-left text-sm hover:bg-[#4a4a4a]"
           >
             <Settings size={17} className="text-gray-300" />
@@ -49,7 +73,7 @@ export default function UserMenu({ name, email }: UserMenuProps) {
           {/* Log out */}
           <button
             type="button"
-            onClick={() => setIsOpen(false)}
+            onClick={() => handleLogoutClick()}
             className="flex w-full items-center gap-3 px-3 py-3 text-left text-sm hover:bg-[#4a4a4a]"
           >
             <LogOut size={17} className="text-gray-300" />

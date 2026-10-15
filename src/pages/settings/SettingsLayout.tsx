@@ -1,15 +1,7 @@
 import { NavLink, Outlet } from "react-router-dom";
 import { UserRound, LockKeyhole, Palette } from "lucide-react";
 import DbSidebar from "../../components/dashboard/DbSideBar";
-import type { User } from "../../features/auth/auth.types";
-
-const user: User = {
-    id: 1,
-    name: "John Doe",
-    email: "john.doe@g.com",
-    created_at: "2023-01-01T00:00:00.000Z",
-    updated_at: "2023-01-01T00:00:00.000Z",
-};
+import { useSelector } from "react-redux";
 
 const tabs = [
   { label: "Profile", path: "profile", icon: UserRound },
@@ -18,6 +10,8 @@ const tabs = [
 ];
 
 export default function SettingsLayout() {
+  const { user } = useSelector((state: any) => state.auth);
+
   return (
     <div className="min-h-screen w-full bg-[#242424] text-white">
       <DbSidebar user={user} />
