@@ -4,13 +4,15 @@ import {
   BookOpen,
   ChevronsUpDown,
 } from "lucide-react";
+import UserMenu from "./UserMenu";
+import type { User } from "../../features/auth/auth.types";
 
 type SidebarProps = {
-  username?: string;
+  user: User;
 };
 
 export default function Sidebar({
-  username = "test2",
+  user,
 }: SidebarProps) {
   return (
     <aside className="fixed left-0 top-0 flex h-screen w-[228px] flex-col border-r border-[#303030] bg-[#171717] px-3 py-3 text-white">
@@ -60,23 +62,9 @@ export default function Sidebar({
       </div>
 
       {/* Profil utilisateur */}
-      <button
-        type="button"
-        className="flex w-full items-center gap-2 rounded-lg px-0.5 py-1 text-left transition hover:bg-[#292929]"
-      >
-        <div className="flex size-7 shrink-0 items-center justify-center rounded-md border border-[#555555] bg-[#404040] text-xs">
-          {username.charAt(0).toLowerCase()}
-        </div>
-
-        <span className="flex-1 truncate text-xs font-medium">
-          {username}
-        </span>
-
-        <ChevronsUpDown
-          size={14}
-          className="shrink-0 text-gray-400"
-        />
-      </button>
+      <div className="mt-1">
+        <UserMenu name={user.name} email={user.email} />
+      </div>
     </aside>
   );
 }

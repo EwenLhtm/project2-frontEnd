@@ -26,11 +26,11 @@ export default function Dashboard() {
   if (loadingTags || loadingNotes || loadingUser) {return <p>Loading...</p>;}
   if (errorTags) {return <p>Error: {errorTags}</p>;}
   if (errorNotes) {return <p>Error: {errorNotes}</p>;}
-  if (errorUser) {return <p>Error: {errorUser}</p>;}
+  if (errorUser || !user) {return <p>Error: {errorUser}</p>;}
 
   return (
     <div className="min-h-screen bg-[#262626] text-white">
-      <Sidebar username={user?.name || 'User'} />
+      <Sidebar user={user!} />
 
       <main className="ml-[228px] min-h-screen p-5 sm:p-7">
         <div className="mx-auto max-w-[1400px] space-y-8">
