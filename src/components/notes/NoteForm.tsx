@@ -2,7 +2,6 @@
 import { useState, type FormEvent } from "react";
 import type { Tag } from "../../features/tags/tag.type";
 import type { User } from "../../features/auth/auth.types";
-import { getCurrentUser } from "../../features/auth/authService";
 import { createNote } from "../../features/notes/noteService";
 import { useAppDispatch } from "../../hooks/redux";
 import { fetchNotes } from "../../features/notes/noteSlice";

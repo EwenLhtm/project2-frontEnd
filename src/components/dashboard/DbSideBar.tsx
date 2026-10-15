@@ -2,7 +2,6 @@ import {
   Home,
   FolderGit2,
   BookOpen,
-  ChevronsUpDown,
 } from "lucide-react";
 import UserMenu from "./UserMenu";
 import type { User } from "../../features/auth/auth.types";
