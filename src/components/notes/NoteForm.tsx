@@ -1,6 +1,7 @@
 
 import { useState, type FormEvent } from "react";
 import type { Tag } from "../../features/tags/tag.type";
+import type { User } from "../../features/auth/auth.types";
 import { getCurrentUser } from "../../features/auth/authService";
 import { createNote } from "../../features/notes/noteService";
 import { useAppDispatch } from "../../hooks/redux";
@@ -8,9 +9,10 @@ import { fetchNotes } from "../../features/notes/noteSlice";
 
 type NoteFormProps = {
   tags: Tag[];
+  user: User;
 };
 
-export default function NoteForm({ tags }: NoteFormProps) {
+export default function NoteForm({ tags, user }: NoteFormProps) {
   const dispatch = useAppDispatch();
 
   const [content, setContent] = useState("");
@@ -28,7 +30,6 @@ export default function NoteForm({ tags }: NoteFormProps) {
     setLoading(true);
 
     try {
-      const user = await getCurrentUser();
       await createNote({ text: trimmedContent, tag_id: parseInt(tagId), user_id: user.id });
       await dispatch(fetchNotes()).unwrap();
 

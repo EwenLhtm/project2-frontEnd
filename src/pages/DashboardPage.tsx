@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { fetchTags } from "../features/tags/tagSlice";
 import { fetchNotes } from "../features/notes/noteSlice";
+import { fetchCurrentUser } from "../features/auth/authSlice";
 import { useAppDispatch, useAppSelector } from "../hooks/redux";
 
 import Sidebar from "../components/dashboard/DbSideBar";
@@ -14,25 +15,28 @@ export default function Dashboard() {
 
   const { tags, loading: loadingTags, error: errorTags } = useAppSelector((state) => state.tags);
   const { notes, loading: loadingNotes, error: errorNotes } = useAppSelector((state) => state.notes);
+  const { user, loading: loadingUser, error: errorUser } = useAppSelector((state) => state.auth);
 
   useEffect(() => {
     dispatch(fetchTags());
     dispatch(fetchNotes());
+    dispatch(fetchCurrentUser());
   }, [dispatch]);
 
-  if (loadingTags || loadingNotes) {return <p>Loading...</p>;}
+  if (loadingTags || loadingNotes || loadingUser) {return <p>Loading...</p>;}
   if (errorTags) {return <p>Error: {errorTags}</p>;}
   if (errorNotes) {return <p>Error: {errorNotes}</p>;}
+  if (errorUser) {return <p>Error: {errorUser}</p>;}
 
   return (
     <div className="min-h-screen bg-[#262626] text-white">
-      <Sidebar username="test2" />
+      <Sidebar username={user?.name || 'User'} />
 
       <main className="ml-[228px] min-h-screen p-5 sm:p-7">
         <div className="mx-auto max-w-[1400px] space-y-8">
           {/* Section Notes */}
           <section className="rounded-xl border border-[#383838] bg-[#171717] p-4 sm:p-5">
-            <NoteForm tags={tags} />
+            <NoteForm tags={tags} user={user!} />
 
             <div className="my-4 border-t border-[#444]" />
 
@@ -48,7 +52,7 @@ export default function Dashboard() {
                   <NoteCard
                     key={note.id}
                     note={note}
-                    tag={tags.find((tag) => tag.id === note.id) ?? null}
+                    tag={tags.find((tag) => tag.id === note.tag_id) ?? null}
                   />
                 ))}
               </div>
@@ -59,7 +63,7 @@ export default function Dashboard() {
           <section className="rounded-xl border border-[#383838] bg-[#171717] p-4 sm:p-5">
             <h2 className="mb-4 text-lg font-semibold">Manage Tags</h2>
 
-            <TagForm />
+            <TagForm/>
 
             {tags.length > 0 && (
               <div className="mt-5 border-t border-[#383838] pt-4">
