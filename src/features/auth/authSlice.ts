@@ -10,7 +10,7 @@ type AuthState = {
 
 const initialState: AuthState = {
     user: null,
-    loading: false,
+    loading: true,
     error: null,
 };
 
@@ -20,7 +20,7 @@ export const fetchCurrentUser = createAsyncThunk(
         try {
             return await getCurrentUser();
         } catch (error: any) {
-            return rejectWithValue(error.message);
+            return rejectWithValue(error.message || 'Failed to fetch current user');
         }
     }
 );

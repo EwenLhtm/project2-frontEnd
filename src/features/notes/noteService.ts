@@ -43,7 +43,6 @@ export async function getAllNotes(): Promise<Note[]> {
 
     const notesData = await response.json() as NoteResponse;
     const notes = notesData.notes as Note[];
-    console.log(notesData);
     return notes;
 }
 
